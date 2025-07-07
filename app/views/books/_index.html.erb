@@ -16,6 +16,11 @@
         </td>
         <td><%= link_to book.title,book_path(book) %></td>
         <td><%= book.body %></td>
+        <!-- いいね機能 -->
+        <td id="favorite-buttons-<%= book.id %>">
+          <%= render partial: 'books/favorite_button', locals: { book: book } %>
+          コメント数: <%= book.book_comments.count %>
+        </td>
       </tr>
     <% end %>
   </tbody>

@@ -8,7 +8,7 @@
     </div>
     <div class='col-md-8 offset-md-1'>
   		<h2>Book detail</h2>
-  		<table class='table'>
+  		<table class='table table-hover-inverse'>
   		  <tr>
           <td><%= link_to(@book.user) do %>
             <%= image_tag @book.user.get_profile_image, size:"100x100" %><br>
@@ -17,12 +17,48 @@
           </td>
           <td><%= link_to @book.title, @book %></td>
           <td><%= @book.body %></td>
-          <% if @book.user == current_user %>
-            <td><%= link_to 'Edit', edit_book_path(@book), class: "btn btn-sm btn-success" %></td>
-            <td><%= link_to 'Destroy', @book, method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger"%></td>
-          <% end %>
+          <td class="text-wrap">
+            <% if @book.user == current_user %>
+              <div class="d-flex">
+                <%= link_to 'Edit', edit_book_path(@book), class: "btn btn-sm btn-success" %>
+                <%= link_to 'Destroy', @book, method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger"%>
+              </div>
+            <% end %>
+            <!-- いいね機能 -->
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div id="favorite-buttons-<%= @book.id %>">
+                <%= render partial: 'favorite_button', locals: { book: @book } %>
+              </div>
+            <!-- コメント機能 -->
+              <div>
+              <span class="text-dark">コメント数: <%= @book.book_comments.count %></span>
+              </div>
+            </div>
+          </td>
         </tr>
       </table>
+      <div id="comments" class="mb-4">
+        <% @book.book_comments.each do |comment| %>
+          <tr>
+            <td><%= link_to(@book.user) do %>
+              <%= image_tag @book.user.get_profile_image, size:"100x100" %><br>
+              <%= @book.user.name %>
+              <% end %>
+            </td>
+            
+            <td><%= comment.comment %></td>
+            <% if comment.user == current_user %>
+              <%= link_to '削除', book_book_comment_path(@book, comment), method: :delete, data: { confirm: '本当に削除しますか？' } %>
+            <% end %>
+          </tr>
+        <% end %>
+      </div>
+      <%= form_with(model: [@book, BookComment.new], local: true, html: { class: "mb-4" }) do |f| %>
+              
+        <%= f.text_area :comment, rows: 5, class: "form-control", style: "width: 500px;" "rounded border border-primary shadow-sm" %>
+    
+        <%= f.submit '送信' %>
+      <% end %>
     </div>
   </div>
 </div>
